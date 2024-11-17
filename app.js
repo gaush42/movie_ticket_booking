@@ -4,9 +4,10 @@ const errorHandler = require('./middleware/errorHandler')
 const app = express()
 
 app.use(express.json())
-app.use(errorHandler)
+
 ConnectDB()
 
 app.use('/', require('./routes/userRoutes'))
+app.use(errorHandler)
 
 module.exports = app

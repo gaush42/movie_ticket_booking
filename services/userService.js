@@ -2,18 +2,20 @@ const bcrypt = require('bcryptjs')
 const userModel = require('../models/userModel')
 require('dotenv').config()
 
-const RegisterUser = async(userData, next) => {
+const RegisterUser = async(userData) => {
     try{
-        email = userData.email
-        password = userData.password
-        role = userData.role
+        const { email, password, role } = userData
 
         if(!email || !password){
-            return res.status(400).json('All fields are required')
+            const error = new Error('All fields are required')
+            error.statusCode = 400
+            throw error
         }
-        const duplicate = await userModel.findOne(email).collation({locale: 'en', strength: 2}).lean().exec()
+        const duplicate = await userModel.findOne({email}).collation({locale: 'en', strength: 2}).lean().exec()
         if(duplicate){
-            return res.status(409).json({message: 'user already exist'})
+            const error = new Error('User already exists')
+            error.statusCode = 409
+            throw error
         }
         const salt = bcrypt.genSaltSync(10)
         const hashedPassword = bcrypt.hashSync(password,salt)
@@ -24,11 +26,11 @@ const RegisterUser = async(userData, next) => {
 
         const newUser = await userModel.create(userObj)
         if (newUser){
-            res.status(201).json({message: 'User created'})
+            return { message: 'User created', statusCode: 201 };
         }
 
     }catch (err){
-        next(err)
+        throw err
     }
 }
 
