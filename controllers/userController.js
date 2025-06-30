@@ -9,7 +9,18 @@ const register = async(req, res, next) => {
         next(err)
     }
 }
-
+const login = async (req, res, next) => {
+    try {
+        const loginResult = await userService.LoginUser(req.body)
+        res.status(loginResult.statusCode).json({
+            message: loginResult.message,
+            token: loginResult.token
+        })
+    } catch (err) {
+        next(err)
+    }
+}
 module.exports = {
-    register
+    register,
+    login
 }

@@ -7,7 +7,9 @@ app.use(express.json())
 
 ConnectDB()
 
-app.use('/', require('./routes/userRoutes'))
+app.use('/api/auth', require('./routes/userRoutes'))
+app.use('/api/theater', require('./routes/theaterRoutes'))
+
 app.use(errorHandler)
 
 module.exports = app

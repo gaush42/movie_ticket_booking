@@ -1,12 +1,13 @@
 const bcrypt = require('bcryptjs')
 const userModel = require('../models/userModel')
+const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 const RegisterUser = async(userData) => {
     try{
-        const { email, password, role } = userData
+        const { fullname, email, password, role } = userData
 
-        if(!email || !password){
+        if(!fullname || !email || !password){
             const error = new Error('All fields are required')
             error.statusCode = 400
             throw error
@@ -21,8 +22,8 @@ const RegisterUser = async(userData) => {
         const hashedPassword = bcrypt.hashSync(password,salt)
 
         const userObj = (!Array.isArray(role) || !role)
-        ? {email, password:hashedPassword}
-        : {email, password:hashedPassword, role}
+        ? {fullname, email, password:hashedPassword}
+        : {fullname, email, password:hashedPassword, role}
 
         const newUser = await userModel.create(userObj)
         if (newUser){
@@ -34,6 +35,47 @@ const RegisterUser = async(userData) => {
     }
 }
 
+const LoginUser = async ({ email, password }) => {
+    if (!email || !password) {
+        const error = new Error("Email and password are required")
+        error.statusCode = 400
+        throw error
+    }
+
+    const foundUser = await userModel.findOne({ email }).exec()
+    if (!foundUser) {
+        const error = new Error("User not found")
+        error.statusCode = 404
+        throw error
+    }
+
+    const isMatch = await bcrypt.compare(password, foundUser.password)
+    if (!isMatch) {
+        const error = new Error("Invalid credentials")
+        error.statusCode = 401
+        throw error
+    }
+
+    // JWT payload
+    const userInfo = {
+        username: foundUser.email,
+        roles: foundUser.role
+    }
+
+    const token = jwt.sign(
+        { userInfo },
+        process.env.JWT_ACCESS_TOKEN,
+        { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE || '1d' }
+    )
+
+    return {
+        message: 'Login successful',
+        token,
+        statusCode: 200
+    }
+}
+
 module.exports = {
-    RegisterUser
+    RegisterUser,
+    LoginUser
 }

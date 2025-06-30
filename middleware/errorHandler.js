@@ -1,7 +1,7 @@
 const {errorLogger} = require('../utils/logger')
 
 const errorHandler = (err, req, res, next) => {
-    errorLogger.error(`${err.message} - ${req.method} ${req.orginalUrl}`)
+    errorLogger.error(`${err.message} - ${req.method} ${req.originalUrl}`)
 
     const statusCode = err.statusCode || 500
     res.status(statusCode).json({

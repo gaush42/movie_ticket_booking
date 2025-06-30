@@ -7,7 +7,7 @@ const errorLogger = winston.createLogger({
         winston.format.json()
     ),
     transports: [
-        new winston.transports.File({ filename: 'error.log '}),
+        new winston.transports.File({ filename: 'error.log'}),
         new winston.transports.Console(),
     ],
 })
@@ -18,7 +18,7 @@ const infoLogger = winston.createLogger({
         winston.format.json()
     ),
     transports: [
-        new winston.transports.File({ filename: 'info.log '}),
+        new winston.transports.File({ filename: 'info.log'}),
         new winston.transports.Console(),
     ],
 })

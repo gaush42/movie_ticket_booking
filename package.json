@@ -2,7 +2,7 @@
   "name": "movie_ticket_booking",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js"
   },
@@ -17,8 +17,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.1",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.7",
+    "nodemailer": "^7.0.4",
     "redis": "^4.7.0",
     "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
