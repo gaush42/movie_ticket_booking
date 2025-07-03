@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manager Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <h1>🏢 Theater Manager Dashboard</h1>
+
+  <section>
+    <h2>Create Screen</h2>
+    <form id="screen-form">
+      <input type="text" name="name" placeholder="Screen Name" required />
+      <input type="text" name="theaterId" placeholder="Theater ID" required />
+      <textarea name="seatLayout" placeholder="Enter layout as JSON (e.g., [[\"A1\", \"A2\"], [\"B1\"]])" required></textarea>
+      <button type="submit">Add Screen</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Create Showtime</h2>
+    <form id="showtime-form">
+      <input type="text" name="screen" placeholder="Screen ID" required />
+      <input type="text" name="movie" placeholder="Movie ID" required />
+      <input type="datetime-local" name="startTime" required />
+      <input type="number" name="ticketPrice" placeholder="Ticket Price" required />
+      <button type="submit">Add Showtime</button>
+    </form>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboardManager.js"></script>
+</body>
+</html>

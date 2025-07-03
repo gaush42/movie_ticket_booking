@@ -1,0 +1,36 @@
+.seat-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.seat {
+  width: 40px;
+  height: 40px;
+  margin: 4px;
+  text-align: center;
+  line-height: 40px;
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.seat.selected {
+  background-color: #4caf50;
+}
+.seat.booked {
+  background-color: #999;
+  cursor: not-allowed;
+}
+footer {
+  text-align: center;
+  margin: 20px;
+}
+#bookBtn {
+  padding: 10px 20px;
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}

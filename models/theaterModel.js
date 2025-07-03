@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const pendingTheaterSchema = new mongoose.Schema({
+const TheaterSchema = new mongoose.Schema({
     theaterName: { type: String, required: true },
     managerName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -10,4 +10,4 @@ const pendingTheaterSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 })
 
-module.exports = mongoose.model("PendingTheater", pendingTheaterSchema)
+module.exports = mongoose.model("Theater", TheaterSchema)
