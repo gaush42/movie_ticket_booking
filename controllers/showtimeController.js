@@ -26,7 +26,8 @@ const getAvailableSeats = async (req, res, next) => {
 
     res.status(200).json({
       seatLayout: showtime.screen.seatLayout,
-      bookedSeats: showtime.bookedSeats
+      bookedSeats: showtime.bookedSeats,
+      ticketPrice: showtime.ticketPrice
     })
   } catch (err) {
     next(err)

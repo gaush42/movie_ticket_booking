@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Register - BookMyMovie</title>
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-left">
+      <h1>🎬 Welcome to BookMyMovie</h1>
+      <p>Book your favorite movie tickets at your favorite theater!</p>
+      <img src="assets/movie.svg" alt="Cinema" />
+    </div>
+    <div class="auth-right">
+      <div class="tabs">
+        <button id="login-tab" class="active">Login</button>
+        <button id="register-tab">Register</button>
+      </div>
+
+      <form id="login-form">
+        <h2>Login</h2>
+        <input type="email" placeholder="Email" required id="login-email" />
+        <input type="password" placeholder="Password" required id="login-password" />
+        <button type="submit">Login</button>
+      </form>
+
+      <form id="register-form" style="display:none;">
+        <h2>Register</h2>
+        <input type="text" placeholder="Full Name" required id="register-name" />
+        <input type="email" placeholder="Email" required id="register-email" />
+        <input type="password" placeholder="Password" required id="register-password" />
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

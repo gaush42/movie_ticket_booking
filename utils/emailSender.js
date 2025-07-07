@@ -2,11 +2,13 @@ const nodemailer = require('nodemailer')
 require('dotenv').config()
 
 const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT),
+  secure: false, // true for port 465, false for 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
 })
 
 const sendTheaterApprovalEmail = async (toEmail, managerName, password) => {
@@ -30,7 +32,18 @@ const sendTheaterApprovalEmail = async (toEmail, managerName, password) => {
 
     await transporter.sendMail(mailOptions)
 }
+const sendPassEmail = async (toEmail, subject, html) => {
+  const mailOptions = {
+    from: `"Movie Booking" <${process.env.EMAIL_USER}>`,
+    to: toEmail,
+    subject,
+    html
+  }
+
+  await transporter.sendMail(mailOptions)
+}
 
 module.exports = {
-    sendTheaterApprovalEmail
+    sendTheaterApprovalEmail,
+    sendPassEmail
 }

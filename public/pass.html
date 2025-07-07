@@ -1,0 +1,22 @@
+<!-- pass.html -->
+<body>
+  <div id="ticket"></div>
+  <script>
+    const bookingId = new URLSearchParams(window.location.search).get('bookingId')
+    const token = localStorage.getItem('token')
+
+    fetch(`/api/booking/pass/${bookingId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('ticket').innerHTML = html
+    })
+    .catch(err => {
+      document.getElementById('ticket').innerText = 'Error loading ticket'
+      console.error(err)
+    })
+  </script>
+</body>

@@ -5,7 +5,7 @@ const verifyJWT = require('../middleware/verifyJWT')
 const verifyRole = require('../middleware/verifyRole')
 
 router.post(
-  '/',
+  '/ticket',
   verifyJWT,
   verifyRole('User'),
   bookingController.bookTicket

@@ -1,6 +1,8 @@
 const urlParams = new URLSearchParams(window.location.search)
 const showtimeId = urlParams.get('showtimeId')
 const seatContainer = document.getElementById('seat-container')
+const totalCostEl = document.getElementById('total-cost')
+let ticketPrice = 0
 let selectedSeats = []
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -10,9 +12,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     //const res = await fetch(`/api/showtimes/${showtimeId}`)
     const res = await fetch(`/api/showtimes/${showtimeId}/seats`)
     const showtime = await res.json()
+    //console.log(res)
     //const layout = showtime.screen?.seatLayout || []
     const layout = showtime.seatLayout || []
     const booked = showtime.bookedSeats || []
+    ticketPrice = showtime.ticketPrice || 0
 
     layout.forEach(row => {
       const rowEl = document.createElement('div')
@@ -49,31 +53,19 @@ function toggleSeat(el, seat) {
     el.classList.add('selected')
     selectedSeats.push(seat)
   }
+  updateTotalCost()
+}
+function updateTotalCost() {
+  const total = selectedSeats.length * ticketPrice
+  totalCostEl.textContent = `Total: ₹${total}`
 }
 
-/*async function bookSeats(showtimeId, seats) {
-  if (seats.length === 0) return alert('Select at least one seat!')
-
-  const res = await fetch(`/api/bookings`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ showtimeId, seats })
-  })
-
-  const data = await res.json()
-  if (res.ok) {
-    alert('Booking successful!')
-    window.location.href = '/'
-  } else {
-    alert(data.message || 'Booking failed')
-  }
-}*/
 async function bookSeats(showtimeId, seats) {
   if (seats.length === 0) return alert('Select at least one seat!')
 
   const token = localStorage.getItem('token')  // assuming you store JWT here
 
-  const res = await fetch(`/api/bookings`, {
+  const res = await fetch(`/api/booking/ticket`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -85,7 +77,7 @@ async function bookSeats(showtimeId, seats) {
   const data = await res.json()
   if (res.ok) {
     alert('Booking successful!')
-    window.location.href = '/'
+    window.location.href = `/pass.html?bookingId=${data.bookingId}`
   } else {
     alert(data.message || 'Booking failed')
   }
