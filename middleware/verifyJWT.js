@@ -18,7 +18,7 @@ const verifyJWT = (req, res, next) => {
 
     // ✅ Correctly extract userId from nested userInfo
     req.userId = decoded.userInfo.userId
-    req.user = decoded.userInfo.username
+    req.user = decoded.userInfo
     req.roles = decoded.userInfo.roles
 
     next()

@@ -56,7 +56,8 @@ const login = async (req, res, next) => {
 
     const userInfo = {
       userId: user._id.toString(),
-      username: user.email,
+      name:user.fullname,
+      email: user.email,
       roles: user.role
     }
 

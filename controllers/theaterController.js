@@ -25,6 +25,15 @@ const applyForTheater = async (req, res, next) => {
   }
 }
 
+const getPendingTheaters = async (req, res, next) => {
+  try {
+    const pending = await Theater.find({ status: 'pending' }).lean()
+    res.status(200).json(pending)
+  } catch (err) {
+    next(err)
+  }
+}
+
 // Approve theater (Admin only)
 const approveTheater = async (req, res, next) => {
   try {
@@ -96,6 +105,7 @@ const deleteScreen = async (req, res, next) => {
 
 module.exports = {
   applyForTheater,
+  getPendingTheaters,
   approveTheater,
   createScreen,
   updateScreen,

@@ -14,6 +14,8 @@ app.use('/api/theater', require('./routes/theaterRoutes'))
 app.use('/api/movies', require('./routes/movieRoutes'))
 app.use('/api/showtimes', require('./routes/showtimeRoutes'))
 app.use('/api/booking', require('./routes/bookingRoutes'))
+app.use('/api/admin', require('./routes/adminRoutes'))
+app.use('/api/manager', require('./routes/managerRoutes'))
 
 
 app.use(errorHandler)

@@ -4,61 +4,57 @@
   <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="css/admin.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
   <header>
     <h1>🎬 Admin Dashboard</h1>
     <nav>
-      <button onclick="showSection('movies')">Movies</button>
-      <button onclick="showSection('showtimes')">Showtimes</button>
-      <button onclick="showSection('theaters')">Theaters</button>
-      <button onclick="showSection('bookings')">Bookings</button>
-      <button onclick="logout()">Logout</button>
+      <button onclick="showSection('stats')">📊 Stats</button>
+      <button onclick="showSection('movies')">🎞 Movies</button>
+      <button onclick="showSection('pending')">🏢 Pending Theaters</button>
+      <button class="logout" onclick="logout()">Logout</button>
     </nav>
   </header>
 
   <main>
-    <!-- Movies Section -->
-    <section id="movies" class="tab-content">
-      <h2>All Movies</h2>
+    <!-- Stats -->
+    <section id="stats" class="tab-content">
+      <div id="stats-container"></div>
+    </section>
+
+    <!-- Movies -->
+    <section id="movies" class="tab-content" style="display:none;">
+      <h2>🎬 Manage Movies</h2>
       <button onclick="openMovieForm()">➕ Add Movie</button>
       <div id="movie-list"></div>
     </section>
 
-    <!-- Showtimes Section -->
-    <section id="showtimes" class="tab-content" style="display:none;">
-      <h2>All Showtimes</h2>
-      <div id="showtime-list"></div>
-    </section>
-
-    <!-- Theaters Section -->
-    <section id="theaters" class="tab-content" style="display:none;">
-      <h2>Pending Theater Applications</h2>
-      <div id="theater-list"></div>
-    </section>
-
-    <!-- Bookings Section -->
-    <section id="bookings" class="tab-content" style="display:none;">
-      <h2>All Bookings</h2>
-      <div id="booking-list"></div>
+    <!-- Pending Theaters -->
+    <section id="pending" class="tab-content" style="display:none;">
+      <h2>🏢 Pending Theater Applications</h2>
+      <div id="pending-list"></div>
     </section>
   </main>
 
-  <!-- Movie Modal (Add/Edit) -->
-  <div id="movie-modal" class="modal" style="display:none;">
+  <div id="movie-modal" class="modal">
     <div class="modal-content">
       <h3 id="modal-title">Add Movie</h3>
       <form id="movie-form">
+        <input type="hidden" id="movieId">
         <input type="text" id="title" placeholder="Title" required />
         <input type="text" id="genre" placeholder="Genre" required />
         <input type="text" id="language" placeholder="Language" required />
         <input type="url" id="posterUrl" placeholder="Poster URL" required />
-        <button type="submit">Save</button>
-        <button type="button" onclick="closeMovieForm()">Cancel</button>
+        <div class="modal-actions">
+          <button type="submit">💾 Save</button>
+          <button type="button" onclick="closeMovieForm()">❌ Cancel</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <script src="js/dashboardAdmin.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>

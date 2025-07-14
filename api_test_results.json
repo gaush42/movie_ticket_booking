@@ -1,0 +1,622 @@
+{
+  "testRun": {
+    "timestamp": "2025-07-14T06:04:38.169Z",
+    "baseURL": "http://localhost:3000/api/manager",
+    "totalEndpoints": 6
+  },
+  "results": {
+    "Theater Details": {
+      "name": "Theater Details",
+      "endpoint": "/theater",
+      "description": "Get theater details for the authenticated manager",
+      "status": 200,
+      "responseTime": "9ms",
+      "headers": {
+        "x-powered-by": "Express",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "165",
+        "etag": "W/\"a5-mR6eYULKPgFmiOt0IKIW+XmXTC0\"",
+        "date": "Mon, 14 Jul 2025 06:04:37 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "data": {
+        "theater": {
+          "id": "686e078b91de55f8b204d8c3",
+          "name": "Cineplex 1",
+          "city": "Delhi",
+          "email": "manager1@m.com",
+          "phone": "9999910001",
+          "createdAt": "2025-07-09T06:09:15.594Z"
+        }
+      },
+      "dataSize": 165,
+      "timestamp": "2025-07-14T06:04:37.464Z"
+    },
+    "Screens List": {
+      "name": "Screens List",
+      "endpoint": "/screens",
+      "description": "Get all screens in the theater",
+      "status": 200,
+      "responseTime": "9ms",
+      "headers": {
+        "x-powered-by": "Express",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "782",
+        "etag": "W/\"30e-boPR2kDC6cOjS7NbMxFon8H5Wes\"",
+        "date": "Mon, 14 Jul 2025 06:04:37 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "data": {
+        "theater": "Cineplex 1",
+        "totalScreens": 3,
+        "screens": [
+          {
+            "id": "686e078b91de55f8b204d8e3",
+            "name": "Screen 1",
+            "totalSeats": 30,
+            "seatLayout": [
+              [
+                "A1",
+                "A2",
+                "A3",
+                "A4",
+                "A5",
+                "A6"
+              ],
+              [
+                "B1",
+                "B2",
+                "B3",
+                "B4",
+                "B5",
+                "B6"
+              ],
+              [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6"
+              ],
+              [
+                "D1",
+                "D2",
+                "D3",
+                "D4",
+                "D5",
+                "D6"
+              ],
+              [
+                "E1",
+                "E2",
+                "E3",
+                "E4",
+                "E5",
+                "E6"
+              ]
+            ]
+          },
+          {
+            "id": "686e078b91de55f8b204d8e4",
+            "name": "Screen 2",
+            "totalSeats": 30,
+            "seatLayout": [
+              [
+                "A1",
+                "A2",
+                "A3",
+                "A4",
+                "A5",
+                "A6"
+              ],
+              [
+                "B1",
+                "B2",
+                "B3",
+                "B4",
+                "B5",
+                "B6"
+              ],
+              [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6"
+              ],
+              [
+                "D1",
+                "D2",
+                "D3",
+                "D4",
+                "D5",
+                "D6"
+              ],
+              [
+                "E1",
+                "E2",
+                "E3",
+                "E4",
+                "E5",
+                "E6"
+              ]
+            ]
+          },
+          {
+            "id": "686e078b91de55f8b204d8e5",
+            "name": "Screen 3",
+            "totalSeats": 30,
+            "seatLayout": [
+              [
+                "A1",
+                "A2",
+                "A3",
+                "A4",
+                "A5",
+                "A6"
+              ],
+              [
+                "B1",
+                "B2",
+                "B3",
+                "B4",
+                "B5",
+                "B6"
+              ],
+              [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6"
+              ],
+              [
+                "D1",
+                "D2",
+                "D3",
+                "D4",
+                "D5",
+                "D6"
+              ],
+              [
+                "E1",
+                "E2",
+                "E3",
+                "E4",
+                "E5",
+                "E6"
+              ]
+            ]
+          }
+        ]
+      },
+      "dataSize": 782,
+      "timestamp": "2025-07-14T06:04:37.574Z"
+    },
+    "Showtimes Grouped": {
+      "name": "Showtimes Grouped",
+      "endpoint": "/showtimes",
+      "description": "Get all showtimes grouped by screen",
+      "status": 500,
+      "error": "Request failed with status code 500",
+      "responseData": {
+        "message": "Server error"
+      },
+      "timestamp": "2025-07-14T06:04:37.702Z"
+    },
+    "Showtimes List": {
+      "name": "Showtimes List",
+      "endpoint": "/showtimes/list",
+      "description": "Get all showtimes as a flat list",
+      "status": 200,
+      "responseTime": "16ms",
+      "headers": {
+        "x-powered-by": "Express",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "3435",
+        "etag": "W/\"d6b-1be4oHgodKocT9o82HCbPWe6R5k\"",
+        "date": "Mon, 14 Jul 2025 06:04:37 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "data": {
+        "theater": {
+          "id": "686e078b91de55f8b204d8c3",
+          "name": "Cineplex 1",
+          "city": "Delhi",
+          "email": "manager1@m.com"
+        },
+        "totalShowtimes": 8,
+        "showtimes": [
+          {
+            "showtimeId": "686e078b91de55f8b204d930",
+            "movie": {
+              "id": "686e078b91de55f8b204d906",
+              "title": "Movie 10",
+              "language": "Hindi",
+              "genre": "Thriller",
+              "duration": 113,
+              "rating": "A",
+              "posterUrl": "https://picsum.photos/200?movie=10"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e4",
+              "name": "Screen 2",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-10T22:09:15.624Z",
+            "ticketPrice": 197,
+            "bookedSeats": [],
+            "availableSeats": 30,
+            "occupancyRate": 0
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d935",
+            "movie": {
+              "id": "686e078b91de55f8b204d904",
+              "title": "Movie 8",
+              "language": "Kannada",
+              "genre": "Thriller",
+              "duration": 127,
+              "rating": "U/A",
+              "posterUrl": "https://picsum.photos/200?movie=8"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e4",
+              "name": "Screen 2",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-11T03:09:15.624Z",
+            "ticketPrice": 161,
+            "bookedSeats": [],
+            "availableSeats": 30,
+            "occupancyRate": 0
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d938",
+            "movie": {
+              "id": "686e078b91de55f8b204d901",
+              "title": "Movie 5",
+              "language": "Hindi",
+              "genre": "Action",
+              "duration": 113,
+              "rating": "U/A",
+              "posterUrl": "https://picsum.photos/200?movie=5"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e3",
+              "name": "Screen 1",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-12T06:09:15.624Z",
+            "ticketPrice": 190,
+            "bookedSeats": [
+              "A1",
+              "A2",
+              "A1",
+              "A2",
+              "A3"
+            ],
+            "availableSeats": 25,
+            "occupancyRate": 17
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d910",
+            "movie": {
+              "id": "686e078b91de55f8b204d901",
+              "title": "Movie 5",
+              "language": "Hindi",
+              "genre": "Action",
+              "duration": 113,
+              "rating": "U/A",
+              "posterUrl": "https://picsum.photos/200?movie=5"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e3",
+              "name": "Screen 1",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-13T14:09:15.624Z",
+            "ticketPrice": 151,
+            "bookedSeats": [
+              "A1"
+            ],
+            "availableSeats": 29,
+            "occupancyRate": 3
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d91e",
+            "movie": {
+              "id": "686e078b91de55f8b204d900",
+              "title": "Movie 4",
+              "language": "Kannada",
+              "genre": "Comedy",
+              "duration": 100,
+              "rating": "U",
+              "posterUrl": "https://picsum.photos/200?movie=4"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e5",
+              "name": "Screen 3",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-14T04:09:15.624Z",
+            "ticketPrice": 195,
+            "bookedSeats": [],
+            "availableSeats": 30,
+            "occupancyRate": 0
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d929",
+            "movie": {
+              "id": "686e078b91de55f8b204d904",
+              "title": "Movie 8",
+              "language": "Kannada",
+              "genre": "Thriller",
+              "duration": 127,
+              "rating": "U/A",
+              "posterUrl": "https://picsum.photos/200?movie=8"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e4",
+              "name": "Screen 2",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-14T15:09:15.624Z",
+            "ticketPrice": 177,
+            "bookedSeats": [],
+            "availableSeats": 30,
+            "occupancyRate": 0
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d916",
+            "movie": {
+              "id": "686e078b91de55f8b204d905",
+              "title": "Movie 9",
+              "language": "Kannada",
+              "genre": "Thriller",
+              "duration": 125,
+              "rating": "U",
+              "posterUrl": "https://picsum.photos/200?movie=9"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e5",
+              "name": "Screen 3",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-14T20:09:15.624Z",
+            "ticketPrice": 179,
+            "bookedSeats": [],
+            "availableSeats": 30,
+            "occupancyRate": 0
+          },
+          {
+            "showtimeId": "686e078b91de55f8b204d918",
+            "movie": {
+              "id": "686e078b91de55f8b204d903",
+              "title": "Movie 7",
+              "language": "Hindi",
+              "genre": "Romance",
+              "duration": 124,
+              "rating": "U/A",
+              "posterUrl": "https://picsum.photos/200?movie=7"
+            },
+            "screen": {
+              "id": "686e078b91de55f8b204d8e5",
+              "name": "Screen 3",
+              "totalSeats": 30
+            },
+            "startTime": "2025-07-14T22:09:15.624Z",
+            "ticketPrice": 170,
+            "bookedSeats": [
+              "A1",
+              "A1",
+              "A2"
+            ],
+            "availableSeats": 27,
+            "occupancyRate": 10
+          }
+        ]
+      },
+      "dataSize": 3435,
+      "timestamp": "2025-07-14T06:04:37.818Z"
+    },
+    "Theater Bookings": {
+      "name": "Theater Bookings",
+      "endpoint": "/bookings",
+      "description": "Get all bookings for the theater",
+      "status": 200,
+      "responseTime": "30ms",
+      "headers": {
+        "x-powered-by": "Express",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "1947",
+        "etag": "W/\"79b-iMD7mR0pWZtZbApN/efEMCyDgMw\"",
+        "date": "Mon, 14 Jul 2025 06:04:37 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "data": {
+        "theater": "Cineplex 1",
+        "summary": {
+          "totalBookings": 5,
+          "totalRevenue": 1611,
+          "statusCounts": {
+            "undefined": 5
+          }
+        },
+        "bookings": [
+          {
+            "id": "686e078b91de55f8b204d976",
+            "user": {
+              "_id": "686e078b91de55f8b204d8da",
+              "email": "user13@test.com"
+            },
+            "movie": {
+              "_id": "686e078b91de55f8b204d901",
+              "title": "Movie 5",
+              "language": "Hindi",
+              "genre": "Action",
+              "duration": 113,
+              "rating": "U/A"
+            },
+            "screen": {
+              "_id": "686e078b91de55f8b204d8e3",
+              "name": "Screen 1"
+            },
+            "startTime": "2025-07-12T06:09:15.624Z",
+            "seats": [
+              "A1",
+              "A2"
+            ],
+            "totalPrice": 380
+          },
+          {
+            "id": "686e078b91de55f8b204d977",
+            "user": {
+              "_id": "686e078b91de55f8b204d8e0",
+              "email": "user19@test.com"
+            },
+            "movie": {
+              "_id": "686e078b91de55f8b204d901",
+              "title": "Movie 5",
+              "language": "Hindi",
+              "genre": "Action",
+              "duration": 113,
+              "rating": "U/A"
+            },
+            "screen": {
+              "_id": "686e078b91de55f8b204d8e3",
+              "name": "Screen 1"
+            },
+            "startTime": "2025-07-12T06:09:15.624Z",
+            "seats": [
+              "A1",
+              "A2",
+              "A3"
+            ],
+            "totalPrice": 570
+          },
+          {
+            "id": "686e078b91de55f8b204d983",
+            "user": {
+              "_id": "686e078b91de55f8b204d8d3",
+              "email": "user6@test.com"
+            },
+            "movie": {
+              "_id": "686e078b91de55f8b204d901",
+              "title": "Movie 5",
+              "language": "Hindi",
+              "genre": "Action",
+              "duration": 113,
+              "rating": "U/A"
+            },
+            "screen": {
+              "_id": "686e078b91de55f8b204d8e3",
+              "name": "Screen 1"
+            },
+            "startTime": "2025-07-13T14:09:15.624Z",
+            "seats": [
+              "A1"
+            ],
+            "totalPrice": 151
+          },
+          {
+            "id": "686e078b91de55f8b204d991",
+            "user": {
+              "_id": "686e078b91de55f8b204d8cf",
+              "email": "user2@test.com"
+            },
+            "movie": {
+              "_id": "686e078b91de55f8b204d903",
+              "title": "Movie 7",
+              "language": "Hindi",
+              "genre": "Romance",
+              "duration": 124,
+              "rating": "U/A"
+            },
+            "screen": {
+              "_id": "686e078b91de55f8b204d8e5",
+              "name": "Screen 3"
+            },
+            "startTime": "2025-07-14T22:09:15.624Z",
+            "seats": [
+              "A1"
+            ],
+            "totalPrice": 170
+          },
+          {
+            "id": "686e078b91de55f8b204d998",
+            "user": {
+              "_id": "686e078b91de55f8b204d8cf",
+              "email": "user2@test.com"
+            },
+            "movie": {
+              "_id": "686e078b91de55f8b204d903",
+              "title": "Movie 7",
+              "language": "Hindi",
+              "genre": "Romance",
+              "duration": 124,
+              "rating": "U/A"
+            },
+            "screen": {
+              "_id": "686e078b91de55f8b204d8e5",
+              "name": "Screen 3"
+            },
+            "startTime": "2025-07-14T22:09:15.624Z",
+            "seats": [
+              "A1",
+              "A2"
+            ],
+            "totalPrice": 340
+          }
+        ]
+      },
+      "dataSize": 1947,
+      "timestamp": "2025-07-14T06:04:37.950Z"
+    },
+    "Manager Stats": {
+      "name": "Manager Stats",
+      "endpoint": "/stats",
+      "description": "Get manager statistics and analytics",
+      "status": 200,
+      "responseTime": "16ms",
+      "headers": {
+        "x-powered-by": "Express",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "233",
+        "etag": "W/\"e9-K9Rb8rOMXzuZEZx+R1EM20zwyCM\"",
+        "date": "Mon, 14 Jul 2025 06:04:38 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "data": {
+        "theaterName": "Cineplex 1",
+        "city": "Delhi",
+        "totalScreens": 3,
+        "totalShowtimes": 8,
+        "totalBookings": 5,
+        "totalRevenue": 1611,
+        "movieStats": [
+          {
+            "title": "Movie 5",
+            "ticketsSold": 6,
+            "revenue": 1101
+          },
+          {
+            "title": "Movie 7",
+            "ticketsSold": 3,
+            "revenue": 510
+          }
+        ]
+      },
+      "dataSize": 233,
+      "timestamp": "2025-07-14T06:04:38.067Z"
+    }
+  }
+}

@@ -8,9 +8,4 @@ const verifyRole = require('../middleware/verifyRole')
 router.get('/all', showtimeController.getAllMovieShowtimes)
 router.get('/:id/seats', showtimeController.getAvailableSeats)
 
-// Admin or Manager routes
-router.post('/', verifyJWT, verifyRole('Administrator', 'Theater_Manager'), showtimeController.createShowtime)
-router.put('/:id', verifyJWT, verifyRole('Administrator', 'Theater_Manager'), showtimeController.updateShowtime)
-router.delete('/:id', verifyJWT, verifyRole('Administrator', 'Theater_Manager'), showtimeController.deleteShowtime)
-
 module.exports = router
