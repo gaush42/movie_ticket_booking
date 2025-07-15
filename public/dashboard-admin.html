@@ -2,54 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="css/admin.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
-  <header>
-    <h1>🎬 Admin Dashboard</h1>
-    <nav>
-      <button onclick="showSection('stats')">📊 Stats</button>
-      <button onclick="showSection('movies')">🎞 Movies</button>
-      <button onclick="showSection('pending')">🏢 Pending Theaters</button>
-      <button class="logout" onclick="logout()">Logout</button>
-    </nav>
-  </header>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-film"></i>
+        <h2>CineAdmin</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showSection('stats')" data-section="stats">
+          <i class="fas fa-chart-bar"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" onclick="showSection('movies')" data-section="movies">
+          <i class="fas fa-video"></i>
+          <span>Movies</span>
+        </button>
+        <button class="nav-item" onclick="showSection('pending')" data-section="pending">
+          <i class="fas fa-building"></i>
+          <span>Pending Theaters</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
 
-  <main>
-    <!-- Stats -->
-    <section id="stats" class="tab-content">
-      <div id="stats-container"></div>
-    </section>
+    <main class="main-content">
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 id="page-title">Dashboard</h1>
+        </div>
+        <div class="header-right">
+          <div class="user-info">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <span>Admin</span>
+          </div>
+        </div>
+      </header>
 
-    <!-- Movies -->
-    <section id="movies" class="tab-content" style="display:none;">
-      <h2>🎬 Manage Movies</h2>
-      <button onclick="openMovieForm()">➕ Add Movie</button>
-      <div id="movie-list"></div>
-    </section>
+      <!-- Stats Section -->
+      <section id="stats" class="tab-content active">
+        <div class="content-header">
+          <h2>Dashboard Overview</h2>
+          <p>Monitor your cinema management system</p>
+        </div>
+        <div id="stats-container" class="stats-wrapper">
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading statistics...</p>
+          </div>
+        </div>
+      </section>
 
-    <!-- Pending Theaters -->
-    <section id="pending" class="tab-content" style="display:none;">
-      <h2>🏢 Pending Theater Applications</h2>
-      <div id="pending-list"></div>
-    </section>
-  </main>
+      <!-- Movies Section -->
+      <section id="movies" class="tab-content">
+        <div class="content-header">
+          <div>
+            <h2>Movie Management</h2>
+            <p>Add, edit, and manage your movie catalog</p>
+          </div>
+          <button class="btn btn-primary" onclick="openMovieForm()">
+            <i class="fas fa-plus"></i>
+            Add Movie
+          </button>
+        </div>
+        <div id="movie-list" class="movie-grid">
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading movies...</p>
+          </div>
+        </div>
+      </section>
 
+      <!-- Pending Theaters Section -->
+      <section id="pending" class="tab-content">
+        <div class="content-header">
+          <h2>Pending Theater Applications</h2>
+          <p>Review and approve theater registration requests</p>
+        </div>
+        <div id="pending-list" class="pending-grid">
+          <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading pending applications...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Movie Modal -->
   <div id="movie-modal" class="modal">
+    <div class="modal-backdrop" onclick="closeMovieForm()"></div>
     <div class="modal-content">
-      <h3 id="modal-title">Add Movie</h3>
-      <form id="movie-form">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Movie</h3>
+        <button class="modal-close" onclick="closeMovieForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="movie-form" class="modal-form">
         <input type="hidden" id="movieId">
-        <input type="text" id="title" placeholder="Title" required />
-        <input type="text" id="genre" placeholder="Genre" required />
-        <input type="text" id="language" placeholder="Language" required />
-        <input type="url" id="posterUrl" placeholder="Poster URL" required />
+        <div class="form-group">
+          <label for="title">Movie Title</label>
+          <input type="text" id="title" placeholder="Enter movie title" required />
+        </div>
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <input type="text" id="genre" placeholder="e.g., Action, Comedy, Drama" required />
+        </div>
+        <div class="form-group">
+          <label for="language">Language</label>
+          <input type="text" id="language" placeholder="e.g., English, Hindi" required />
+        </div>
+        <div class="form-group">
+          <label for="posterUrl">Poster URL</label>
+          <input type="url" id="posterUrl" placeholder="https://example.com/poster.jpg" required />
+        </div>
         <div class="modal-actions">
-          <button type="submit">💾 Save</button>
-          <button type="button" onclick="closeMovieForm()">❌ Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="closeMovieForm()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i>
+            Save Movie
+          </button>
         </div>
       </form>
     </div>

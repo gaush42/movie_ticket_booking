@@ -1,85 +1,403 @@
-const urlParams = new URLSearchParams(window.location.search)
-const showtimeId = urlParams.get('showtimeId')
-const seatContainer = document.getElementById('seat-container')
-const totalCostEl = document.getElementById('total-cost')
-let ticketPrice = 0
-let selectedSeats = []
+// Enhanced Seat Booking JavaScript with improved UX
+class SeatBooking {
+  constructor() {
+    this.urlParams = new URLSearchParams(window.location.search);
+    this.showtimeId = this.urlParams.get('showtimeId');
+    this.seatContainer = document.getElementById('seat-container');
+    this.totalCostEl = document.getElementById('total-cost');
+    this.selectedSeatsListEl = document.getElementById('selected-seats-list');
+    this.bookBtn = document.getElementById('bookBtn');
+    this.loadingOverlay = document.getElementById('loading');
+    
+    this.ticketPrice = 0;
+    this.selectedSeats = [];
+    this.seatLayout = [];
+    this.bookedSeats = [];
+    
+    this.init();
+  }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!showtimeId) return alert('Invalid showtime ID')
+  async init() {
+    if (!this.showtimeId) {
+      this.showError('Invalid showtime ID');
+      return;
+    }
 
-  try {
-    //const res = await fetch(`/api/showtimes/${showtimeId}`)
-    const res = await fetch(`/api/showtimes/${showtimeId}/seats`)
-    const showtime = await res.json()
-    //console.log(res)
-    //const layout = showtime.screen?.seatLayout || []
-    const layout = showtime.seatLayout || []
-    const booked = showtime.bookedSeats || []
-    ticketPrice = showtime.ticketPrice || 0
+    try {
+      this.showLoading(true);
+      await this.loadSeats();
+      this.renderSeats();
+      this.setupEventListeners();
+      this.showLoading(false);
+    } catch (error) {
+      console.error('Error initializing seat booking:', error);
+      this.showError('Failed to load seat layout. Please try again.');
+      this.showLoading(false);
+    }
+  }
 
-    layout.forEach(row => {
-      const rowEl = document.createElement('div')
-      rowEl.classList.add('seat-row')
+  async loadSeats() {
+    try {
+      const response = await fetch(`/api/showtimes/${this.showtimeId}/seats`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const showtime = await response.json();
+      
+      this.seatLayout = showtime.seatLayout || [];
+      this.bookedSeats = showtime.bookedSeats || [];
+      this.ticketPrice = showtime.ticketPrice || 0;
+      
+      // Update movie info if available
+      if (showtime.movie) {
+        this.updateMovieInfo(showtime.movie, showtime);
+      }
+      
+    } catch (error) {
+      console.error('Error loading seats:', error);
+      throw error;
+    }
+  }
+
+  updateMovieInfo(movie, showtime) {
+    const movieTitleEl = document.querySelector('.movie-title');
+    const dateEl = document.querySelector('.date');
+    const timeEl = document.querySelector('.time');
+    const screenEl = document.querySelector('.screen');
+    
+    if (movieTitleEl && movie.title) {
+      movieTitleEl.textContent = movie.title;
+    }
+    
+    if (showtime.date && dateEl) {
+      dateEl.textContent = this.formatDate(showtime.date);
+    }
+    
+    if (showtime.time && timeEl) {
+      timeEl.textContent = showtime.time;
+    }
+    
+    if (showtime.screen && screenEl) {
+      screenEl.textContent = `Screen ${showtime.screen}`;
+    }
+  }
+
+  renderSeats() {
+    this.seatContainer.innerHTML = '';
+    
+    this.seatLayout.forEach((row, rowIndex) => {
+      const rowEl = document.createElement('div');
+      rowEl.classList.add('seat-row');
+      rowEl.setAttribute('data-row', String.fromCharCode(65 + rowIndex)); // A, B, C, etc.
+      
       row.forEach(seat => {
-        const seatEl = document.createElement('div')
-        seatEl.classList.add('seat')
-        seatEl.textContent = seat
-
-        if (booked.includes(seat)) {
-          seatEl.classList.add('booked')
+        const seatEl = document.createElement('div');
+        seatEl.classList.add('seat');
+        seatEl.textContent = seat;
+        seatEl.setAttribute('data-seat', seat);
+        
+        if (this.bookedSeats.includes(seat)) {
+          seatEl.classList.add('booked');
+          seatEl.title = 'This seat is already booked';
         } else {
-          seatEl.addEventListener('click', () => toggleSeat(seatEl, seat))
+          seatEl.classList.add('available');
+          seatEl.title = `Select seat ${seat} - ₹${this.ticketPrice}`;
+          seatEl.addEventListener('click', () => this.toggleSeat(seatEl, seat));
         }
-
-        rowEl.appendChild(seatEl)
-      })
-      seatContainer.appendChild(rowEl)
-    })
-
-    document.getElementById('bookBtn').addEventListener('click', () => {
-      bookSeats(showtimeId, selectedSeats)
-    })
-  } catch (err) {
-    console.error('Error loading seat layout:', err)
+        
+        rowEl.appendChild(seatEl);
+      });
+      
+      this.seatContainer.appendChild(rowEl);
+    });
   }
-})
 
-function toggleSeat(el, seat) {
-  if (el.classList.contains('selected')) {
-    el.classList.remove('selected')
-    selectedSeats = selectedSeats.filter(s => s !== seat)
-  } else {
-    el.classList.add('selected')
-    selectedSeats.push(seat)
+  toggleSeat(seatEl, seat) {
+    if (seatEl.classList.contains('booked')) {
+      return;
+    }
+    
+    // Add visual feedback
+    seatEl.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      seatEl.style.transform = '';
+    }, 150);
+    
+    if (seatEl.classList.contains('selected')) {
+      seatEl.classList.remove('selected');
+      seatEl.classList.add('available');
+      seatEl.title = `Select seat ${seat} - ₹${this.ticketPrice}`;
+      this.selectedSeats = this.selectedSeats.filter(s => s !== seat);
+    } else {
+      seatEl.classList.remove('available');
+      seatEl.classList.add('selected');
+      seatEl.title = `Selected seat ${seat} - ₹${this.ticketPrice}`;
+      this.selectedSeats.push(seat);
+    }
+    
+    this.updateBookingSummary();
   }
-  updateTotalCost()
-}
-function updateTotalCost() {
-  const total = selectedSeats.length * ticketPrice
-  totalCostEl.textContent = `Total: ₹${total}`
-}
 
-async function bookSeats(showtimeId, seats) {
-  if (seats.length === 0) return alert('Select at least one seat!')
+  updateBookingSummary() {
+    const seatCount = this.selectedSeats.length;
+    const total = seatCount * this.ticketPrice;
+    
+    // Update seat count
+    const seatsCountEl = document.querySelector('.seats-count');
+    if (seatsCountEl) {
+      seatsCountEl.textContent = `${seatCount} seat${seatCount !== 1 ? 's' : ''} selected`;
+    }
+    
+    // Update total cost
+    this.totalCostEl.textContent = `₹${total.toLocaleString()}`;
+    
+    // Update selected seats list
+    this.updateSelectedSeatsList();
+    
+    // Update book button state
+    this.bookBtn.disabled = seatCount === 0;
+    
+    // Add pulse animation to total when it changes
+    if (seatCount > 0) {
+      this.totalCostEl.style.animation = 'none';
+      setTimeout(() => {
+        this.totalCostEl.style.animation = 'pulse 0.5s ease-out';
+      }, 10);
+    }
+  }
 
-  const token = localStorage.getItem('token')  // assuming you store JWT here
+  updateSelectedSeatsList() {
+    this.selectedSeatsListEl.innerHTML = '';
+    
+    this.selectedSeats.forEach(seat => {
+      const seatTag = document.createElement('span');
+      seatTag.classList.add('selected-seat-tag');
+      seatTag.textContent = seat;
+      this.selectedSeatsListEl.appendChild(seatTag);
+    });
+  }
 
-  const res = await fetch(`/api/booking/ticket`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ showtimeId, seats })
-  })
+  setupEventListeners() {
+    this.bookBtn.addEventListener('click', () => this.bookSeats());
+    
+    // Add keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !this.bookBtn.disabled) {
+        this.bookSeats();
+      }
+    });
+  }
 
-  const data = await res.json()
-  if (res.ok) {
-    alert('Booking successful!')
-    window.location.href = `/pass.html?bookingId=${data.bookingId}`
-  } else {
-    alert(data.message || 'Booking failed')
+  async bookSeats() {
+    if (this.selectedSeats.length === 0) {
+      this.showError('Please select at least one seat!');
+      return;
+    }
+
+    try {
+      this.showLoading(true);
+      this.bookBtn.disabled = true;
+      
+      const token = this.getAuthToken();
+      
+      const response = await fetch('/api/booking/ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          showtimeId: this.showtimeId,
+          seats: this.selectedSeats
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        this.showSuccess('Booking successful! Redirecting to your ticket...');
+        setTimeout(() => {
+          window.location.href = `/pass.html?bookingId=${data.bookingId}`;
+        }, 1500);
+      } else {
+        throw new Error(data.message || 'Booking failed');
+      }
+      
+    } catch (error) {
+      console.error('Booking error:', error);
+      this.showError(error.message || 'Booking failed. Please try again.');
+      this.bookBtn.disabled = false;
+      this.showLoading(false);
+    }
+  }
+
+  getAuthToken() {
+    // In a real application, you would use a secure method to store tokens
+    // For demo purposes, we'll use a simple variable
+    return sessionStorage.getItem('authToken') || 'demo-token';
+  }
+
+  showLoading(show) {
+    this.loadingOverlay.style.display = show ? 'flex' : 'none';
+  }
+
+  showError(message) {
+    this.showNotification(message, 'error');
+  }
+
+  showSuccess(message) {
+    this.showNotification(message, 'success');
+  }
+
+  showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+      <div class="notification-content">
+        <span class="notification-icon">${type === 'error' ? '⚠️' : '✅'}</span>
+        <span class="notification-message">${message}</span>
+      </div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === 'error' ? '#E63946' : '#4CAF50'};
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1001;
+      animation: slideInRight 0.3s ease-out;
+      max-width: 300px;
+      font-family: var(--font-family);
+    `;
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .notification-icon {
+        font-size: 1.2rem;
+      }
+      
+      .notification-message {
+        flex: 1;
+        font-weight: 500;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+    `;
+    
+    if (!document.querySelector('#notification-styles')) {
+      style.id = 'notification-styles';
+      document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 4 seconds
+    setTimeout(() => {
+      notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 4000);
+  }
+
+  formatDate(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
   }
 }
 
+// Initialize the seat booking system when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  new SeatBooking();
+});
+
+// Add some demo functionality for testing
+if (window.location.search.includes('demo')) {
+  // Mock API responses for demo
+  const originalFetch = window.fetch;
+  window.fetch = async (url, options) => {
+    if (url.includes('/api/showtimes/') && url.includes('/seats')) {
+      return {
+        ok: true,
+        json: async () => ({
+          seatLayout: [
+            ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
+            ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8'],
+            ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'],
+            ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8'],
+            ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8'],
+            ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8']
+          ],
+          bookedSeats: ['A1', 'A2', 'B5', 'C3', 'D7', 'E1'],
+          ticketPrice: 250,
+          movie: {
+            title: 'Avengers: Endgame'
+          },
+          date: new Date().toISOString().split('T')[0],
+          time: '7:30 PM',
+          screen: '1'
+        })
+      };
+    }
+    
+    if (url.includes('/api/booking/ticket')) {
+      // Simulate booking API
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+      return {
+        ok: true,
+        json: async () => ({
+          bookingId: 'BK' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          message: 'Booking successful!'
+        })
+      };
+    }
+    
+    return originalFetch(url, options);
+  };
+}

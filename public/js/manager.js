@@ -2,8 +2,8 @@
 class TheaterManager {
     constructor() {
         this.baseURL = 'http://localhost:3000/api/manager';
-        this.authURL = 'http://localhost:3000/api/auth';
-        this.token = sessionStorage.getItem('token') || null;
+        //this.authURL = 'http://localhost:3000/api/auth';
+        this.token = localStorage.getItem('token') || null;
         this.theaterData = null;
         this.screensData = null;
         this.showtimesData = null;
@@ -16,52 +16,21 @@ class TheaterManager {
     async init() {
         // Check if token exists and is valid
         if (!this.token) {
-            await this.showLogin();
+            //await this.showLogin();
+            window.location.href = '/auth.html';
             return;
         }
 
         try {
+            console.log(this.token);
             await this.loadAllData();
         } catch (error) {
             console.error('Initialization error:', error);
-            await this.showLogin();
+            sessionStorage.removeItem('token');
+            window.location.href = '/auth.html';
+            //await this.showLogin();
         }
     }
-
-    async showLogin() {
-        const email = prompt('Enter your email:');
-        const password = prompt('Enter your password:');
-        
-        if (email && password) {
-            await this.login(email, password);
-        }
-    }
-
-    async login(email, password) {
-        try {
-            const response = await fetch(`${this.authURL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-            
-            if (response.ok) {
-                this.token = data.token || data.accessToken;
-                sessionStorage.setItem('token', this.token);
-                await this.loadAllData();
-            } else {
-                throw new Error(data.message || 'Login failed');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            alert('Login failed: ' + error.message);
-        }
-    }
-
     async apiCall(endpoint, method = 'GET', data = null) {
         const headers = {
             'Content-Type': 'application/json',
@@ -83,12 +52,13 @@ class TheaterManager {
             if (!response.ok) {
                 if (response.status === 401) {
                     sessionStorage.removeItem('token');
-                    await this.showLogin();
+                    window.location.href = '/auth.html';
+                    //await this.showLogin();
                     return;
                 }
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            
+            console.log(this.token);
             return await response.json();
         } catch (error) {
             console.error('API call error:', error);
@@ -529,7 +499,7 @@ class TheaterManager {
             }
         });
         
-        this.showLogin();
+        //this.showLogin();
     }
 
     // Method to refresh data

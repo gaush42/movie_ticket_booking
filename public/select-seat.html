@@ -2,19 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Select Seats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Your Seats - Cinema Booking</title>
   <link rel="stylesheet" href="css/seat.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header><h2>Select Your Seats</h2></header>
-  <main id="seat-container"></main>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <h1 class="title">Select Your Seats</h1>
+        <div class="movie-info">
+          <div class="movie-title">Movie Title</div>
+          <div class="showtime-info">
+            <span class="date">Today</span>
+            <span class="time">7:30 PM</span>
+            <span class="screen">Screen 1</span>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  <div id="total-cost" style="text-align:center; font-size:1.2em; margin-top: 10px;">
-  Total: ₹0
+    <main class="main-content">
+      <div class="screen-container">
+        <div class="screen">
+          <div class="screen-text">SCREEN</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="seat-demo available"></div>
+          <span>Available</span>
+        </div>
+        <div class="legend-item">
+          <div class="seat-demo selected"></div>
+          <span>Selected</span>
+        </div>
+        <div class="legend-item">
+          <div class="seat-demo booked"></div>
+          <span>Booked</span>
+        </div>
+      </div>
+
+      <div class="seat-map">
+        <div id="seat-container" class="seat-container"></div>
+      </div>
+
+      <div class="booking-summary">
+        <div class="summary-content">
+          <div class="selected-seats-info">
+            <span class="seats-count">0 seat(s) selected</span>
+            <div id="selected-seats-list" class="selected-seats-list"></div>
+          </div>
+          <div class="total-section">
+            <div class="price-breakdown">
+              <span class="price-label">Total Amount</span>
+              <span id="total-cost" class="total-amount">₹0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <button id="bookBtn" class="book-btn" disabled>
+          <span class="btn-text">Book Selected Seats</span>
+          <span class="btn-icon">→</span>
+        </button>
+      </div>
+    </footer>
   </div>
-  <footer>
-    <button id="bookBtn">Book Selected Seats</button>
-  </footer>
+
+  <div id="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Loading seats...</p>
+  </div>
+
   <script src="js/seat.js"></script>
 </body>
 </html>

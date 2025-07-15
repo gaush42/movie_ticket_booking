@@ -9,33 +9,114 @@
 <body>
   <div class="auth-container">
     <div class="auth-left">
-      <h1>🎬 Welcome to BookMyMovie</h1>
-      <p>Book your favorite movie tickets at your favorite theater!</p>
-      <img src="assets/movie.svg" alt="Cinema" />
-    </div>
-    <div class="auth-right">
-      <div class="tabs">
-        <button id="login-tab" class="active">Login</button>
-        <button id="register-tab">Register</button>
+      <div class="brand-section">
+        <h1>🎬 BookMyMovie</h1>
+        <p>Your gateway to the best cinematic experiences</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-icon">🎭</span>
+            <span>Premium Theater Selection</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">🎫</span>
+            <span>Instant Ticket Booking</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">⭐</span>
+            <span>Exclusive Movie Previews</span>
+          </div>
+        </div>
       </div>
-
-      <form id="login-form">
-        <h2>Login</h2>
-        <input type="email" placeholder="Email" required id="login-email" />
-        <input type="password" placeholder="Password" required id="login-password" />
-        <button type="submit">Login</button>
-      </form>
-
-      <form id="register-form" style="display:none;">
-        <h2>Register</h2>
-        <input type="text" placeholder="Full Name" required id="register-name" />
-        <input type="email" placeholder="Email" required id="register-email" />
-        <input type="password" placeholder="Password" required id="register-password" />
-        <button type="submit">Register</button>
-      </form>
+      <div class="cinema-illustration">
+        <div class="movie-screen"></div>
+        <div class="theater-seats">
+          <div class="seat-row">
+            <div class="seat"></div>
+            <div class="seat"></div>
+            <div class="seat occupied"></div>
+            <div class="seat"></div>
+            <div class="seat"></div>
+          </div>
+          <div class="seat-row">
+            <div class="seat occupied"></div>
+            <div class="seat"></div>
+            <div class="seat"></div>
+            <div class="seat occupied"></div>
+            <div class="seat"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="auth-right">
+      <div class="auth-form-container">
+        <div class="tabs">
+          <button id="login-tab" class="tab-button active">Login</button>
+          <button id="register-tab" class="tab-button">Register</button>
+        </div>
+        
+        <form id="login-form" class="auth-form">
+          <h2>Welcome Back</h2>
+          <p class="form-subtitle">Sign in to your account</p>
+          
+          <div class="input-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" placeholder="Enter your email" required />
+          </div>
+          
+          <div class="input-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password" required />
+          </div>
+          
+          <button type="submit" class="submit-btn">
+            <span class="btn-text">Sign In</span>
+            <div class="btn-loader" style="display: none;">
+              <div class="spinner"></div>
+            </div>
+          </button>
+          
+          <div class="form-footer">
+            <a href="#" class="forgot-password">Forgot Password?</a>
+          </div>
+        </form>
+        
+        <form id="register-form" class="auth-form" style="display:none;">
+          <h2>Create Account</h2>
+          <p class="form-subtitle">Join BookMyMovie today</p>
+          
+          <div class="input-group">
+            <label for="register-name">Full Name</label>
+            <input type="text" id="register-name" placeholder="Enter your full name" required />
+          </div>
+          
+          <div class="input-group">
+            <label for="register-email">Email Address</label>
+            <input type="email" id="register-email" placeholder="Enter your email" required />
+          </div>
+          
+          <div class="input-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" placeholder="Create a password" required />
+          </div>
+          
+          <button type="submit" class="submit-btn">
+            <span class="btn-text">Create Account</span>
+            <div class="btn-loader" style="display: none;">
+              <div class="spinner"></div>
+            </div>
+          </button>
+          
+          <div class="form-footer">
+            <p class="terms">By registering, you agree to our <a href="#">Terms of Service</a></p>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-
+  
+  <div id="notification" class="notification"></div>
+  
   <script src="js/auth.js"></script>
 </body>
 </html>

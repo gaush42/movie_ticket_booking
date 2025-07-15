@@ -1,314 +1,76 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Theater Manager Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .tab-button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .tab-button:hover {
-            background: #0056b3;
-        }
-        
-        .tab-button.active {
-            background: #0056b3;
-        }
-        
-        .tab-content {
-            display: none;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #007bff;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        
-        .btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 5px;
-        }
-        
-        .btn:hover {
-            background: #0056b3;
-        }
-        
-        .btn-success {
-            background: #28a745;
-        }
-        
-        .btn-success:hover {
-            background: #218838;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 500px;
-            max-width: 90%;
-        }
-        
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .close:hover {
-            color: black;
-        }
-        
-        .seat-layout {
-            display: grid;
-            gap: 5px;
-            margin: 10px 0;
-        }
-        
-        .seat-row {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        
-        .seat {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            background: #f0f0f0;
-        }
-        
-        .seat.booked {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .success {
-            background: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theater Manager Dashboard</title>
+  <link rel="stylesheet" href="css/manager.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Theater Manager Dashboard</h1>
-            <div id="theaterInfo">
-                <p>Loading theater information...</p>
-            </div>
-        </div>
-
-        <div class="nav-tabs">
-            <button class="tab-button active" onclick="showTab('dashboard')">Dashboard</button>
-            <button class="tab-button" onclick="showTab('screens')">Screens</button>
-            <button class="tab-button" onclick="showTab('showtimes')">Showtimes</button>
-            <button class="tab-button" onclick="showTab('bookings')">Bookings</button>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content active">
-            <div id="statsContainer">
-                <div class="loading">Loading statistics...</div>
-            </div>
-            
-            <h3>Recent Movie Performance</h3>
-            <div id="movieStats">
-                <div class="loading">Loading movie statistics...</div>
-            </div>
-        </div>
-
-        <!-- Screens Tab -->
-        <div id="screens" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3>Screen Management</h3>
-                <button class="btn btn-success" onclick="showCreateScreenModal()">Add New Screen</button>
-            </div>
-            
-            <div id="screensContainer">
-                <div class="loading">Loading screens...</div>
-            </div>
-        </div>
-
-        <!-- Showtimes Tab -->
-        <div id="showtimes" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3>Showtime Management</h3>
-                <button class="btn btn-success" onclick="showCreateShowtimeModal()">Add New Showtime</button>
-            </div>
-            
-            <div id="showtimesContainer">
-                <div class="loading">Loading showtimes...</div>
-            </div>
-        </div>
-
-        <!-- Bookings Tab -->
-        <div id="bookings" class="tab-content">
-            <h3>Booking Management</h3>
-            <div id="bookingsSummary">
-                <div class="loading">Loading booking summary...</div>
-            </div>
-            
-            <div id="bookingsContainer">
-                <div class="loading">Loading bookings...</div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>Theater Manager Dashboard</h1>
+      <div id="theaterInfo">
+        <p>Loading theater information...</p>
+      </div>
     </div>
 
-    <!-- Create Screen Modal -->
+    <div class="nav-tabs">
+      <button class="tab-button active" onclick="showTab('dashboard')">Dashboard</button>
+      <button class="tab-button" onclick="showTab('screens')">Screens</button>
+      <button class="tab-button" onclick="showTab('showtimes')">Showtimes</button>
+      <button class="tab-button" onclick="showTab('bookings')">Bookings</button>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div id="dashboard" class="tab-content active">
+      <div id="statsContainer" class="stats-grid">
+        <div class="loading">Loading statistics...</div>
+      </div>
+      <h3>Recent Movie Performance</h3>
+      <div id="movieStats">
+        <div class="loading">Loading movie statistics...</div>
+      </div>
+    </div>
+
+    <!-- Screens Tab -->
+    <div id="screens" class="tab-content">
+      <div class="tab-header">
+        <h3>Screen Management</h3>
+        <button class="btn btn-success" onclick="showCreateScreenModal()">Add New Screen</button>
+      </div>
+      <div id="screensContainer" class="data-container">
+        <div class="loading">Loading screens...</div>
+      </div>
+    </div>
+
+    <!-- Showtimes Tab -->
+    <div id="showtimes" class="tab-content">
+      <div class="tab-header">
+        <h3>Showtime Management</h3>
+        <button class="btn btn-success" onclick="showCreateShowtimeModal()">Add New Showtime</button>
+      </div>
+      <div id="showtimesContainer" class="data-container">
+        <div class="loading">Loading showtimes...</div>
+      </div>
+    </div>
+
+    <!-- Bookings Tab -->
+    <div id="bookings" class="tab-content">
+      <h3>Booking Management</h3>
+      <div id="bookingsSummary" class="data-container">
+        <div class="loading">Loading booking summary...</div>
+      </div>
+      <div id="bookingsContainer" class="data-container">
+        <div class="loading">Loading bookings...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals (Screen, Showtime, Edit) -->
+  <!-- Place your modal HTML here exactly as it was, for brevity not repeating --><!-- Create Screen Modal -->
     <div id="createScreenModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('createScreenModal')">&times;</span>
@@ -384,6 +146,7 @@
         </div>
     </div>
 
-    <script src="js/manager.js"></script>
+
+  <script src="js/manager.js"></script>
 </body>
 </html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Details - Book My Movie</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #F1FAEE;
+      color: #1D3557;
+      line-height: 1.6;
+    }
+
+    .navbar {
+      background-color: #1D3557;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      box-shadow: 0 2px 10px rgba(29, 53, 87, 0.1);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #F1FAEE;
+      text-decoration: none;
+    }
+
+    .back-btn {
+      background-color: #457B9D;
+      color: #F1FAEE;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-btn:hover {
+      background-color: #3a6b8a;
+    }
+
+    .signin-btn {
+      background-color: #E63946;
+      color: #F1FAEE;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: auto;
+    }
+
+    .signin-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .movie-header {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      background-color: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(29, 53, 87, 0.1);
+    }
+
+    .movie-poster {
+      width: 300px;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 3px solid #A8DADC;
+    }
+
+    .movie-details {
+      flex: 1;
+    }
+
+    .movie-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #1D3557;
+      margin-bottom: 1rem;
+    }
+
+    .movie-genre {
+      color: #457B9D;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .movie-description {
+      color: #1D3557;
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .showtimes-section {
+      background-color: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(29, 53, 87, 0.1);
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #1D3557;
+      margin-bottom: 1.5rem;
+    }
+
+    .city-filter {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .city-filter select {
+      padding: 0.75rem;
+      border: 2px solid #A8DADC;
+      border-radius: 10px;
+      background-color: #F1FAEE;
+      color: #1D3557;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .theater-card {
+      background-color: #F1FAEE;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #457B9D;
+    }
+
+    .theater-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #1D3557;
+      margin-bottom: 0.5rem;
+    }
+
+    .theater-location {
+      color: #457B9D;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .showtimes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .showtime-card {
+      background-color: white;
+      border: 2px solid #A8DADC;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .showtime-card:hover {
+      border-color: #457B9D;
+      transform: translateY(-2px);
+    }
+
+    .showtime-time {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #1D3557;
+      margin-bottom: 0.5rem;
+    }
+
+    .showtime-info {
+      color: #457B9D;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .showtime-price {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #E63946;
+      margin-bottom: 1rem;
+    }
+
+    .select-seats-btn {
+      width: 100%;
+      background-color: #E63946;
+      color: #F1FAEE;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+    }
+
+    .select-seats-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .loading {
+      text-align: center;
+      color: #457B9D;
+      font-size: 1.2rem;
+      margin-top: 3rem;
+    }
+
+    .no-showtimes {
+      text-align: center;
+      color: #457B9D;
+      font-size: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .movie-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .movie-poster {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+      }
+
+      .movie-title {
+        font-size: 2rem;
+      }
+
+      .showtimes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="logo">🎬 BookMyMovie</a>
+      <a href="index.html" class="back-btn">← Back to Movies</a>
+      <a href="auth.html">
+        <button class="signin-btn">Sign In</button>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div id="movie-content">
+      <div class="loading">Loading movie details...</div>
+    </div>
+  </main>
+
+  <script>
+    let movieData = null
+    let allShowtimes = []
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const movieId = urlParams.get('movieId')
+      
+      if (!movieId) {
+        document.getElementById('movie-content').innerHTML = '<div class="no-showtimes">Movie not found. Please go back and try again.</div>'
+        return
+      }
+
+      await fetchMovieDetails(movieId)
+    })
+
+    async function fetchMovieDetails(movieId) {
+      try {
+        const res = await fetch('/api/showtimes/all')
+        const data = await res.json()
+        
+        // Filter showtimes for this specific movie
+        const movieShowtimes = data.filter(show => show.movie && show.movie._id === movieId)
+        
+        if (movieShowtimes.length === 0) {
+          document.getElementById('movie-content').innerHTML = '<div class="no-showtimes">No showtimes available for this movie.</div>'
+          return
+        }
+
+        movieData = movieShowtimes[0].movie
+        allShowtimes = movieShowtimes
+        renderMovieDetails()
+        
+      } catch (err) {
+        console.error('Failed to fetch movie details:', err)
+        document.getElementById('movie-content').innerHTML = '<div class="no-showtimes">Error loading movie details. Please try again later.</div>'
+      }
+    }
+
+    function renderMovieDetails() {
+      const content = document.getElementById('movie-content')
+      
+      // Group showtimes by theater
+      const theaterGroups = {}
+      
+      allShowtimes.forEach(show => {
+        const theater = show.screen?.theater
+        const screen = show.screen
+        
+        if (!theater || !screen) return
+        
+        const theaterId = theater._id
+        if (!theaterGroups[theaterId]) {
+          theaterGroups[theaterId] = {
+            theater: theater,
+            showtimes: []
+          }
+        }
+        
+        theaterGroups[theaterId].showtimes.push({
+          _id: show._id,
+          startTime: show.startTime,
+          screenName: screen.name,
+          ticketPrice: show.ticketPrice
+        })
+      })
+
+      // Get unique cities for filter
+      const cities = [...new Set(allShowtimes.map(show => show.screen?.theater?.city).filter(Boolean))]
+
+      content.innerHTML = `
+        <div class="movie-header">
+          <img src="${movieData.posterUrl}" alt="${movieData.title}" class="movie-poster" />
+          <div class="movie-details">
+            <h1 class="movie-title">${movieData.title}</h1>
+            <p class="movie-genre">${movieData.genre} | ${movieData.language}</p>
+            <div class="movie-description">
+              ${movieData.description || 'Experience this amazing movie with state-of-the-art sound and picture quality. Book your tickets now for an unforgettable cinematic experience!'}
+            </div>
+          </div>
+        </div>
+
+        <div class="showtimes-section">
+          <h2 class="section-title">Select Showtime</h2>
+          
+          <div class="city-filter">
+            <label for="citySelect">Filter by City:</label>
+            <select id="citySelect">
+              <option value="all">All Cities</option>
+              ${cities.map(city => `<option value="${city}">${city}</option>`).join('')}
+            </select>
+          </div>
+
+          <div id="theaters-container">
+            ${Object.values(theaterGroups).map(group => renderTheaterCard(group)).join('')}
+          </div>
+        </div>
+      `
+
+      // Add event listener for city filter
+      document.getElementById('citySelect').addEventListener('change', filterByCity)
+    }
+
+    function renderTheaterCard(theaterGroup) {
+      const theater = theaterGroup.theater
+      const showtimes = theaterGroup.showtimes.sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+
+      return `
+        <div class="theater-card" data-city="${theater.city}">
+          <div class="theater-name">${theater.theaterName}</div>
+          <div class="theater-location">📍 ${theater.city}</div>
+          
+          <div class="showtimes-grid">
+            ${showtimes.map(showtime => `
+              <div class="showtime-card">
+                <div class="showtime-time">${formatTime(showtime.startTime)}</div>
+                <div class="showtime-info">${showtime.screenName}</div>
+                <div class="showtime-price">₹${showtime.ticketPrice}</div>
+                <a href="select-seat.html?showtimeId=${showtime._id}" class="select-seats-btn">
+                  Select Seats
+                </a>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `
+    }
+
+    function filterByCity() {
+      const selectedCity = document.getElementById('citySelect').value
+      const theaterCards = document.querySelectorAll('.theater-card')
+      
+      theaterCards.forEach(card => {
+        const city = card.getAttribute('data-city')
+        if (selectedCity === 'all' || city === selectedCity) {
+          card.style.display = 'block'
+        } else {
+          card.style.display = 'none'
+        }
+      })
+    }
+
+    function formatTime(dateStr) {
+      const date = new Date(dateStr)
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+  </script>
+</body>
+</html>
