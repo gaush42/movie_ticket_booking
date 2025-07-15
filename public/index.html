@@ -23,6 +23,7 @@
       padding: 1rem 2rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 2rem;
       box-shadow: 0 2px 10px rgba(29, 53, 87, 0.1);
     }
@@ -68,8 +69,27 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
+    #user-name {
+      margin-left: 12px;
+      font-weight: bold;
+      color: #F1FAEE;
+      padding: 10px;
+    }
+    #logout-btn {
+      background-color: #E63946;
+      color: #F1FAEE;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
     .signin-btn:hover {
+      background-color: #d32f2f;
+    }
+    #logout-btn:hover{
       background-color: #d32f2f;
     }
 
@@ -207,9 +227,16 @@
       <select id="cityFilter">
         <option value="all">All Cities</option>
       </select>
-      <a href="auth.html">
+      <!--<a href="auth.html">
         <button class="signin-btn">Sign In</button>
-      </a>
+      </a>-->
+      <div id="user-actions">
+        <a href="auth.html" id="signin-link">
+          <button class="signin-btn">Sign In</button>
+        </a>
+        <span id="user-name" style="display: none;"></span>
+        <button id="logout-btn" style="display: none;">Logout</button>
+      </div>
     </div>
   </header>
 
@@ -227,7 +254,29 @@
       await fetchShowtimes()
       initCityFilter()
       initSearch()
+      nav()
     })
+    async function nav(){
+      const userJSON = localStorage.getItem('user')
+      const user = userJSON ? JSON.parse(userJSON) : null
+
+      const userNameEl = document.getElementById('user-name')
+      const signInEl = document.getElementById('signin-link')
+      const logoutBtn = document.getElementById('logout-btn')
+
+      if (user) {
+        userNameEl.textContent = `👤 ${user.name || user.email || 'User'}`
+        userNameEl.style.display = 'inline-block'
+        logoutBtn.style.display = 'inline-block'
+        signInEl.style.display = 'none'
+      }
+
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        window.location.reload()
+      })
+    }
 
     async function fetchShowtimes() {
       try {
