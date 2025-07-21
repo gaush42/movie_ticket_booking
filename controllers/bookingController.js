@@ -48,8 +48,8 @@ const createBookingOrder = async (req, res, next) => {
         customer_phone: "9999999999" // You might want to get this from user profile
       },
       order_meta: {
-        return_url: `http://localhost:3000/pass.html?order_id=${orderId}`,
-        notify_url: `http://localhost:3000/api/booking-webhook`,
+        return_url: `https://movie-j183.onrender.com/pass.html?orderId=${orderId}`,
+        notify_url: `https://movie-j183.onrender.com/api/booking-webhook`,
         payment_methods: "cc,dc,upi"
       }
     };

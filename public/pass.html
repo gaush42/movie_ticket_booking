@@ -2,7 +2,7 @@
 <body>
   <div id="ticket"></div>
   <script>
-    const bookingId = new URLSearchParams(window.location.search).get('bookingId')
+    const bookingId = new URLSearchParams(window.location.search).get('orderId')
     const token = localStorage.getItem('token')
 
     fetch(`/api/booking/pass/${bookingId}`, {
