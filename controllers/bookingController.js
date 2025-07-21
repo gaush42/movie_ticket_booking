@@ -49,7 +49,7 @@ const createBookingOrder = async (req, res, next) => {
       },
       order_meta: {
         return_url: `https://movie-j183.onrender.com/pass.html?orderId=${orderId}`,
-        notify_url: `https://movie-j183.onrender.com/api/booking-webhook`,
+        notify_url: `https://movie-j183.onrender.com/api/booking/booking-webhook`,
         payment_methods: "cc,dc,upi"
       }
     };
