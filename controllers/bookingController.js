@@ -246,7 +246,7 @@ const generatePassHTML = async (req, res, next) => {
     const bookingId = req.params.id
     const userId = req.userId
 
-    const booking = await Booking.findById(bookingId)
+    /*const booking = await Booking.findById(bookingId)
       .populate({
         path: 'showtime',
         populate: [
@@ -254,7 +254,16 @@ const generatePassHTML = async (req, res, next) => {
           { path: 'screen', populate: { path: 'theater' } }
         ]
       })
-      .populate('user')
+      .populate('user')*/
+      const booking = await Booking.findOne({ orderId: bookingId })
+      .populate({
+        path: 'showtime',
+        populate: [
+          { path: 'movie' },
+          { path: 'screen', populate: { path: 'theater' } }
+        ]
+      })
+      .populate('user');
 
     if (!booking) {
       return res.status(404).send('Booking not found')
