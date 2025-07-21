@@ -190,7 +190,7 @@ class SeatBooking {
     });
   }
 
-  async bookSeats() {
+  /*async bookSeats() {
     if (this.selectedSeats.length === 0) {
       this.showError('Please select at least one seat!');
       return;
@@ -231,7 +231,50 @@ class SeatBooking {
       this.bookBtn.disabled = false;
       this.showLoading(false);
     }
+  }*/
+  async bookSeats() {
+    if (this.selectedSeats.length === 0) {
+      this.showError('Please select at least one seat!');
+      return;
+    }
+
+    try {
+      this.showLoading(true);
+      this.bookBtn.disabled = true;
+      const token = this.getAuthToken();
+
+      // Step 1: Initiate Payment (get payment session from server)
+      const res = await fetch('/api/booking/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          showtimeId: this.showtimeId,
+          seats: this.selectedSeats
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to initiate payment');
+
+      // Step 2: Start Cashfree Checkout
+      const cashfree = Cashfree({ mode: "sandbox" }); // change to "production" when live
+
+      cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: "_self"
+      });
+
+    } catch (error) {
+      console.error('Booking error:', error);
+      this.showError(error.message || 'Booking failed. Please try again.');
+      this.bookBtn.disabled = false;
+      this.showLoading(false);
+    }
   }
+
 
   getAuthToken() {
     // In a real application, you would use a secure method to store tokens

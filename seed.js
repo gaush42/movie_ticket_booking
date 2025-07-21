@@ -280,6 +280,9 @@ async function seed() {
       const showtime = randomChoice(insertedShowtimes);
       const seats = ['A1', 'A2', 'A3'].slice(0, Math.floor(1 + Math.random() * 3));
       const totalPrice = seats.length * showtime.ticketPrice;
+      const orderId = 'ORDER_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      const paymentSessionId = 'ps_' + Math.random().toString(36).substring(2, 18);
+      const status = 'CONFIRMED'
 
       showtime.bookedSeats.push(...seats);
       await showtime.save();
@@ -290,6 +293,9 @@ async function seed() {
         seats,
         totalPrice,
         bookingTime: new Date(),
+        orderId,
+        paymentSessionId,
+        status,
       });
     }
 
