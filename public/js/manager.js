@@ -1,7 +1,7 @@
 // Theater Manager Dashboard JavaScript
 class TheaterManager {
     constructor() {
-        this.baseURL = 'http://localhost:3000/api/manager';
+        this.baseURL = 'https://movie-j183.onrender.com/api/manager';
         //this.authURL = 'http://localhost:3000/api/auth';
         this.token = localStorage.getItem('token') || null;
         this.theaterData = null;

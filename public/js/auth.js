@@ -238,26 +238,6 @@ class AuthManager {
     const redirectUrl = redirectMap[role] || '/index.html';
     window.location.href = redirectUrl;
   }
-  
-  // Check if user is already logged in
-  /*checkAuthStatus() {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    
-    if (token && user) {
-      try {
-        const userData = JSON.parse(user);
-        this.showNotification('You are already logged in. Redirecting...', 'info');
-        setTimeout(() => {
-          this.redirectBasedOnRole(userData.role);
-        }, 1000);
-      } catch (error) {
-        // Clear invalid data
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
-    }
-  }*/
 }
 
 // Initialize auth manager when DOM is loaded

@@ -275,22 +275,4 @@ async function testWithSampleData() {
   
   const tester = new ManagerAPITester();
   await tester.authenticate();
-  
-  // You can add more specific tests here
-  // For example, if you want to test with query parameters:
-  
-  // await tester.testEndpoint(
-  //   'Showtimes with Date Filter',
-  //   '/showtimes?date=2024-01-01',
-  //   'Get showtimes for specific date'
-  // );
-  
-  // await tester.testEndpoint(
-  //   'Bookings with Status Filter',
-  //   '/bookings?status=confirmed',
-  //   'Get only confirmed bookings'
-  // );
 }
-
-// Uncomment to run sample data tests
-// testWithSampleData();

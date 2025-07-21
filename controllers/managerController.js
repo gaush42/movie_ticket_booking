@@ -161,7 +161,7 @@ const getManagerShowtimes = async (req, res) => {
   }
 };
 
-// Alternative controller for a flat list view (without grouping by screen)
+
 const getManagerShowtimesList = async (req, res) => {
   try {
     const managerEmail = req.user.email;
@@ -222,11 +222,6 @@ const getManagerShowtimesList = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-
-
-
-// ==================== THEATER MANAGEMENT ====================
 
 // Get theater details
 const getTheaterDetails = async (req, res) => {
@@ -297,9 +292,7 @@ const updateTheaterDetails = async (req, res) => {
   }
 };
 
-// ==================== SCREEN MANAGEMENT ====================
 
-// Get all screens of the theater
 const getScreens = async (req, res) => {
   try {
     const managerEmail = req.user.email;
@@ -466,8 +459,6 @@ const deleteScreen = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-// ==================== SHOWTIME MANAGEMENT ====================
 
 // Create new showtime
 const createShowtime = async (req, res) => {
@@ -661,8 +652,6 @@ const deleteShowtime = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-// ==================== BOOKING MANAGEMENT ====================
 
 // Get all bookings for the theater
 const getTheaterBookings = async (req, res) => {

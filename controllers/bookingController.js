@@ -9,8 +9,8 @@ const cashfree = new Cashfree(Cashfree.SANDBOX, process.env.CASHFREE_APP_ID, pro
 
 const createBookingOrder = async (req, res, next) => {
   try {
-    const userId = req.userId // set by verifyJWT middleware
-    const userEmail = req.email // assuming this is set by middleware
+    const userId = req.userId 
+    const userEmail = req.email
     const { showtimeId, seats } = req.body
 
     if (!showtimeId || !Array.isArray(seats) || seats.length === 0) {
@@ -45,7 +45,7 @@ const createBookingOrder = async (req, res, next) => {
       customer_details: {
         customer_id: `user_${userId}`,
         customer_email: userEmail,
-        customer_phone: "9999999999" // You might want to get this from user profile
+        customer_phone: "9999999999"
       },
       order_meta: {
         return_url: `https://movie-j183.onrender.com/pass.html?orderId=${orderId}`,
@@ -142,7 +142,6 @@ const handleBookingWebhook = async (req, res) => {
   }
 };
 
-// Helper function to send booking confirmation email
 const sendBookingConfirmationEmail = async (booking) => {
   try {
     const showtime = booking.showtime
@@ -240,7 +239,6 @@ const getBookingStatus = async (req, res, next) => {
   }
 }
 
-// Updated generatePassHTML to only work for confirmed bookings
 const generatePassHTML = async (req, res, next) => {
   try {
     const bookingId = req.params.id
