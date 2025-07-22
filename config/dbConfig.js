@@ -5,7 +5,7 @@ const {errorLogger, infoLogger} = require('../utils/logger')
 dotenv.config()
 
 const ConnectDB = () => {
-    const mongoURL = process.env.MONGO_CONNECTION_URL
+    const mongoURL = process.env.MONGO_CONNECTION_URLDEV
     if(!mongoURL){
         throw new Error('MONGO_CONNECTION_URL is not defined in .env')
     }

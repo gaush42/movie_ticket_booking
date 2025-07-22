@@ -170,7 +170,7 @@ function generateSeatLayout(rows = 5, cols = 6) {
 
 async function seed() {
   try {
-    await mongoose.connect(process.env.MONGO_CONNECTION_URL);
+    await mongoose.connect(process.env.MONGO_CONNECTION_URLDEV);
     console.log('✅ Connected to MongoDB');
 
     // Clear existing data

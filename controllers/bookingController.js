@@ -1,147 +1,379 @@
 const { Cashfree } = require('cashfree-pg');
+const mongoose = require('mongoose');
 const Booking = require('../models/bookingModel')
 const Showtime = require('../models/showtimeModel')
+const SeatLock = require('../models/seatLockModel')
 const { sendPassEmail } = require('../utils/emailSender')
 require("dotenv").config()
 
 // Initialize Cashfree
 const cashfree = new Cashfree(Cashfree.SANDBOX, process.env.CASHFREE_APP_ID, process.env.CASHFREE_SECRET_KEY)
 
+// Constants for seat locking
+const SEAT_LOCK_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 100; // milliseconds
+
+// Helper function to create seat locks
+const createSeatLocks = async (showtimeId, seats, userId, session = null) => {
+  const lockExpiryTime = new Date(Date.now() + SEAT_LOCK_TIMEOUT);
+  
+  const seatLocks = seats.map(seat => ({
+    showtime: showtimeId,
+    seat: seat,
+    userId: userId,
+    expiresAt: lockExpiryTime,
+    status: 'LOCKED'
+  }));
+
+  return await SeatLock.insertMany(seatLocks, { session });
+};
+
+// Helper function to check for existing locks
+const checkExistingLocks = async (showtimeId, seats, userId) => {
+  const now = new Date();
+  
+  // Find any active locks for these seats (excluding expired ones and current user's locks)
+  const existingLocks = await SeatLock.find({
+    showtime: showtimeId,
+    seat: { $in: seats },
+    status: 'LOCKED',
+    expiresAt: { $gt: now },
+    userId: { $ne: userId }
+  });
+
+  return existingLocks;
+};
+
+// Helper function to cleanup expired locks
+const cleanupExpiredLocks = async (showtimeId) => {
+  const now = new Date();
+  await SeatLock.deleteMany({
+    showtime: showtimeId,
+    expiresAt: { $lt: now }
+  });
+};
+
+// Helper function to remove user's existing locks for this showtime
+const removeUserExistingLocks = async (showtimeId, userId, session = null) => {
+  await SeatLock.deleteMany({
+    showtime: showtimeId,
+    userId: userId
+  }, { session });
+};
+
 const createBookingOrder = async (req, res, next) => {
-  try {
-    const userId = req.userId 
-    const userEmail = req.email
-    const { showtimeId, seats } = req.body
+  const session = await mongoose.startSession();
+  let retryAttempts = 0;
 
-    if (!showtimeId || !Array.isArray(seats) || seats.length === 0) {
-      return res.status(400).json({ message: 'Showtime and seats are required' })
-    }
+  while (retryAttempts < MAX_RETRY_ATTEMPTS) {
+    try {
+      await session.withTransaction(async () => {
+        const userId = req.userId;
+        const userEmail = req.email;
+        const { showtimeId, seats } = req.body;
 
-    const showtime = await Showtime.findById(showtimeId)
-      .populate({
-        path: 'screen',
-        populate: { path: 'theater' }
-      })
-      .populate('movie')
+        if (!showtimeId || !Array.isArray(seats) || seats.length === 0) {
+          throw new Error('Showtime and seats are required');
+        }
 
-    if (!showtime) {
-      return res.status(404).json({ message: 'Showtime not found' })
-    }
+        // Validate seats format and remove duplicates
+        const uniqueSeats = [...new Set(seats)];
+        const seatRegex = /^[A-Z]\d+$/; // Assuming seats are like A1, B2, etc.
+        
+        if (!uniqueSeats.every(seat => seatRegex.test(seat))) {
+          throw new Error('Invalid seat format');
+        }
 
-    // Check if seats are already booked
-    const alreadyBooked = seats.some(seat => showtime.bookedSeats.includes(seat))
-    if (alreadyBooked) {
-      return res.status(409).json({ message: 'One or more seats already booked' })
-    }
+        // Cleanup expired locks first
+        await cleanupExpiredLocks(showtimeId);
 
-    const totalPrice = seats.length * showtime.ticketPrice
-    const orderId = `booking_${Date.now()}_${userId}`
+        // Find showtime with lock
+        const showtime = await Showtime.findById(showtimeId)
+          .populate({
+            path: 'screen',
+            populate: { path: 'theater' }
+          })
+          .populate('movie')
+          .session(session);
 
-    // Create Cashfree order
-    const request = {
-      order_id: orderId,
-      order_amount: totalPrice,
-      order_currency: "INR",
-      customer_details: {
-        customer_id: `user_${userId}`,
-        customer_email: userEmail,
-        customer_phone: "9999999999"
-      },
-      order_meta: {
-        return_url: `https://movie-j183.onrender.com/pass.html?orderId=${orderId}`,
-        notify_url: `https://movie-j183.onrender.com/api/booking/booking-webhook`,
-        payment_methods: "cc,dc,upi"
+        if (!showtime) {
+          throw new Error('Showtime not found');
+        }
+
+        // Check if seats are permanently booked
+        const alreadyBooked = uniqueSeats.some(seat => showtime.bookedSeats.includes(seat));
+        if (alreadyBooked) {
+          throw new Error('One or more seats already booked');
+        }
+
+        // Check for existing active locks by other users
+        const existingLocks = await checkExistingLocks(showtimeId, uniqueSeats, userId);
+        if (existingLocks.length > 0) {
+          const lockedSeats = existingLocks.map(lock => lock.seat);
+          throw new Error(`Seats ${lockedSeats.join(', ')} are currently being booked by another user. Please try again.`);
+        }
+
+        // Remove user's existing locks for this showtime (in case they're changing seats)
+        await removeUserExistingLocks(showtimeId, userId, session);
+
+        // Create new seat locks
+        const seatLocks = await createSeatLocks(showtimeId, uniqueSeats, userId, session);
+
+        const totalPrice = uniqueSeats.length * showtime.ticketPrice;
+        const orderId = `booking_${Date.now()}_${userId}_${Math.random().toString(36).substr(2, 9)}`;
+
+        // Create Cashfree order
+        const request = {
+          order_id: orderId,
+          order_amount: totalPrice,
+          order_currency: "INR",
+          customer_details: {
+            customer_id: `user_${userId}`,
+            customer_email: userEmail,
+            customer_phone: "9999999999"
+          },
+          order_meta: {
+            return_url: `https://movie-j183.onrender.com/pass.html?orderId=${orderId}`,
+            notify_url: `https://movie-j183.onrender.com/api/booking/booking-webhook`,
+            payment_methods: "cc,dc,upi"
+          }
+        };
+
+        const response = await cashfree.PGCreateOrder(request);
+
+        // Create pending booking record
+        const booking = await Booking.create([{
+          user: userId,
+          showtime: showtimeId,
+          seats: uniqueSeats,
+          totalPrice,
+          orderId,
+          paymentSessionId: response.data.payment_session_id,
+          status: 'PENDING',
+          seatLockIds: seatLocks.map(lock => lock._id)
+        }], { session });
+
+        // Store response data for sending outside transaction
+        req.bookingResponse = {
+          message: 'Payment order created - seats locked for 10 minutes',
+          paymentSessionId: response.data.payment_session_id,
+          orderId,
+          bookingId: booking[0]._id,
+          amount: totalPrice,
+          lockedSeats: uniqueSeats,
+          lockExpiresAt: new Date(Date.now() + SEAT_LOCK_TIMEOUT).toISOString()
+        };
+      });
+
+      // Transaction successful, break out of retry loop
+      break;
+
+    } catch (err) {
+      retryAttempts++;
+      
+      if (err.message === 'Showtime not found' || 
+          err.message === 'Showtime and seats are required' ||
+          err.message === 'Invalid seat format') {
+        // Don't retry for validation errors
+        await session.endSession();
+        return res.status(400).json({ message: err.message });
       }
-    };
 
-    const response = await cashfree.PGCreateOrder(request);
+      if (err.message.includes('already booked') || 
+          err.message.includes('currently being booked')) {
+        await session.endSession();
+        return res.status(409).json({ message: err.message });
+      }
 
-    // Create pending booking record
-    const booking = await Booking.create({
-      user: userId,
-      showtime: showtimeId,
-      seats,
-      totalPrice,
-      orderId,
-      paymentSessionId: response.data.payment_session_id,
-      status: 'PENDING'
-    })
+      if (retryAttempts >= MAX_RETRY_ATTEMPTS) {
+        console.error('Max retry attempts reached:', err);
+        await session.endSession();
+        return res.status(500).json({ 
+          message: 'Unable to process booking due to high demand. Please try again.' 
+        });
+      }
 
-    res.status(201).json({
-      message: 'Payment order created',
-      paymentSessionId: response.data.payment_session_id,
-      orderId,
-      bookingId: booking._id,
-      amount: totalPrice
-    })
-
-  } catch (err) {
-    console.error('Create booking order error:', err)
-    next(err)
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * retryAttempts));
+    }
   }
-}
 
-const handleBookingWebhook = async (req, res) => {
+  await session.endSession();
+
+  if (req.bookingResponse) {
+    res.status(201).json(req.bookingResponse);
+  } else {
+    res.status(500).json({ message: 'Booking failed' });
+  }
+};
+
+// Function to release seat locks (called when payment fails or expires)
+const releaseSeatLocks = async (orderId, reason = 'RELEASED') => {
   try {
+    const booking = await Booking.findOne({ orderId });
+    if (!booking) return;
 
-    const orderId = req.body.data.order.order_id;
-    const paymentStatus = req.body.data.payment.payment_status;
+    await SeatLock.deleteMany({
+      _id: { $in: booking.seatLockIds || [] }
+    });
 
-    console.log(`Booking Order ID: ${orderId}, Payment Status: ${paymentStatus}`);
+    console.log(`Released seat locks for order ${orderId}: ${reason}`);
+  } catch (error) {
+    console.error('Error releasing seat locks:', error);
+  }
+};
 
-    // Find the booking
-    const booking = await Booking.findOne({ orderId })
-      .populate({
-        path: 'showtime',
-        populate: [
-          { path: 'movie' },
-          { path: 'screen', populate: { path: 'theater' } }
-        ]
-      })
-      .populate('user')
+// Updated webhook handler
+const handleBookingWebhook = async (req, res) => {
+  const session = await mongoose.startSession();
 
-    if (!booking) {
-      return res.status(404).json({ success: false, message: "Booking not found" });
-    }
+  try {
+    await session.withTransaction(async () => {
+      const orderId = req.body.data.order.order_id;
+      const paymentStatus = req.body.data.payment.payment_status;
 
-    // Idempotency check
-    if (booking.status === 'CONFIRMED' || booking.status === 'FAILED') {
-      console.log("🚫 Booking already processed, skipping update.");
-      return res.status(200).json({ success: true, message: "Already processed" });
-    }
+      console.log(`Booking Order ID: ${orderId}, Payment Status: ${paymentStatus}`);
 
-    if (paymentStatus === 'SUCCESS') {
-      // Update booking status
-      booking.status = 'CONFIRMED';
-      await booking.save();
+      // Find the booking
+      const booking = await Booking.findOne({ orderId })
+        .populate({
+          path: 'showtime',
+          populate: [
+            { path: 'movie' },
+            { path: 'screen', populate: { path: 'theater' } }
+          ]
+        })
+        .populate('user')
+        .session(session);
 
-      // Reserve the seats in showtime
-      const showtime = await Showtime.findById(booking.showtime._id)
-      showtime.bookedSeats.push(...booking.seats)
-      await showtime.save()
+      if (!booking) {
+        throw new Error("Booking not found");
+      }
 
-      // Send confirmation email with ticket
-      await sendBookingConfirmationEmail(booking)
+      // Idempotency check
+      if (booking.status === 'CONFIRMED' || booking.status === 'FAILED') {
+        console.log("🚫 Booking already processed, skipping update.");
+        return;
+      }
 
-      console.log(`✅ Booking confirmed for order: ${orderId}`)
-      return res.json({ success: true, message: "Booking confirmed successfully!" });
+      if (paymentStatus === 'SUCCESS') {
+        // Update booking status
+        booking.status = 'CONFIRMED';
+        await booking.save({ session });
 
-    } else if (paymentStatus === 'FAILED') {
-      booking.status = 'FAILED';
-      await booking.save();
+        // Move seats from locks to permanent booking
+        const showtime = await Showtime.findById(booking.showtime._id).session(session);
+        showtime.bookedSeats.push(...booking.seats);
+        await showtime.save({ session });
 
-      console.log(`❌ Booking failed for order: ${orderId}`)
-      return res.json({ success: true, message: "Payment failed, booking cancelled." });
-    }
+        // Remove seat locks
+        await SeatLock.deleteMany({
+          _id: { $in: booking.seatLockIds || [] }
+        }, { session });
 
-    return res.status(200).json({ success: true });
+        // Send confirmation email (outside transaction)
+        setImmediate(() => sendBookingConfirmationEmail(booking));
+
+        console.log(`✅ Booking confirmed for order: ${orderId}`);
+
+      } else if (paymentStatus === 'FAILED') {
+        booking.status = 'FAILED';
+        await booking.save({ session });
+
+        // Release seat locks
+        await SeatLock.deleteMany({
+          _id: { $in: booking.seatLockIds || [] }
+        }, { session });
+
+        console.log(`❌ Booking failed for order: ${orderId}`);
+      }
+    });
+
+    await session.endSession();
+    return res.json({ success: true, message: "Webhook processed successfully" });
 
   } catch (error) {
+    await session.endSession();
     console.error("Booking Webhook Error:", error);
+    
+    // Try to release locks even if webhook processing fails
+    if (req.body.data?.order?.order_id) {
+      await releaseSeatLocks(req.body.data.order.order_id, 'WEBHOOK_ERROR');
+    }
+    
     return res.status(500).json({ success: false, error: error.message });
   }
 };
 
+// Function to check seat availability (for frontend)
+const checkSeatAvailability = async (req, res, next) => {
+  try {
+    const { showtimeId } = req.params;
+    
+    // Cleanup expired locks first
+    await cleanupExpiredLocks(showtimeId);
+    
+    const showtime = await Showtime.findById(showtimeId);
+    if (!showtime) {
+      return res.status(404).json({ message: 'Showtime not found' });
+    }
+
+    // Get currently locked seats
+    const now = new Date();
+    const lockedSeats = await SeatLock.find({
+      showtime: showtimeId,
+      status: 'LOCKED',
+      expiresAt: { $gt: now }
+    }).select('seat userId expiresAt');
+
+    res.json({
+      bookedSeats: showtime.bookedSeats,
+      lockedSeats: lockedSeats.map(lock => ({
+        seat: lock.seat,
+        isOwnLock: lock.userId.toString() === req.userId,
+        expiresAt: lock.expiresAt
+      }))
+    });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Cleanup expired locks periodically (call this with a cron job)
+const cleanupExpiredLocksJob = async () => {
+  try {
+    const result = await SeatLock.deleteMany({
+      expiresAt: { $lt: new Date() }
+    });
+    
+    if (result.deletedCount > 0) {
+      console.log(`Cleaned up ${result.deletedCount} expired seat locks`);
+    }
+  } catch (error) {
+    console.error('Error cleaning up expired locks:', error);
+  }
+};
+
+// Release user's locks manually (if they cancel before payment)
+const releaseUserLocks = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const { showtimeId } = req.body;
+
+    await SeatLock.deleteMany({
+      showtime: showtimeId,
+      userId: userId
+    });
+
+    res.json({ message: 'Seat locks released successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Helper function to send booking confirmation email
 const sendBookingConfirmationEmail = async (booking) => {
   try {
     const showtime = booking.showtime
@@ -206,39 +438,6 @@ const sendBookingConfirmationEmail = async (booking) => {
     console.error('Error sending confirmation email:', error)
   }
 }
-
-const getBookingStatus = async (req, res, next) => {
-  try {
-    const { orderId } = req.params
-    const userId = req.userId
-
-    const booking = await Booking.findOne({ orderId, user: userId })
-      .populate({
-        path: 'showtime',
-        populate: [
-          { path: 'movie' },
-          { path: 'screen', populate: { path: 'theater' } }
-        ]
-      })
-
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' })
-    }
-
-    res.json({
-      bookingId: booking._id,
-      orderId: booking.orderId,
-      status: booking.status,
-      totalPrice: booking.totalPrice,
-      seats: booking.seats,
-      showtime: booking.showtime
-    })
-
-  } catch (err) {
-    next(err)
-  }
-}
-
 const generatePassHTML = async (req, res, next) => {
   try {
     const bookingId = req.params.id
@@ -324,6 +523,9 @@ const generatePassHTML = async (req, res, next) => {
 module.exports = {
   createBookingOrder,
   handleBookingWebhook,
-  getBookingStatus,
+  checkSeatAvailability,
+  releaseUserLocks,
+  releaseSeatLocks,
+  cleanupExpiredLocksJob,
   generatePassHTML
-}
+};

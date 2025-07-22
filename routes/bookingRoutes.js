@@ -6,7 +6,8 @@ const verifyRole = require('../middleware/verifyRole')
 
 router.post('/create-order', verifyJWT, verifyRole('User'), bookingController.createBookingOrder)
 router.post('/booking-webhook', bookingController.handleBookingWebhook)
-router.get('/status/:orderId', verifyJWT, bookingController.getBookingStatus)
 router.get('/pass/:id',verifyJWT,verifyRole('User'),bookingController.generatePassHTML)
+router.post('/release-locks', verifyJWT, bookingController.releaseUserLocks)
+router.get('/seats/:showtimeId', verifyJWT, bookingController.checkSeatAvailability)
 
 module.exports = router
